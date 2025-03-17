@@ -77,7 +77,7 @@ Rosiery Maia
 
 ## 🤝 Contribuidores
 
--   \[Felipe Medeiros]
--   \[Ismael Santos]
--   \[Mateus Garcia]
--   \[Nicolas Macedo]
+-   [Felipe Medeiros](https://github.com/FelipeFMedeiros)
+-   [Ismael Santos](https://github.com/ismaelsantos1)
+-   [Mateus Garcia](https://github.com/M2004GV)
+-   [Nicolas Macedo](https://github.com/nicmacedo)
