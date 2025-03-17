@@ -49,5 +49,5 @@ g.adicionar_vertice(3)
 g.adicionar_aresta(1, 2, 5)
 g.adicionar_aresta(2, 3, 7)
 g.imprimir()
-
+print(g.eh_adjacente(1,2))
 print("Grau do vértice 2:", g.grau(2))
