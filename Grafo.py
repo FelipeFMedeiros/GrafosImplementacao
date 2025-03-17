@@ -8,7 +8,7 @@ class Grafo:
             self.vertices.add(v)
             self.arestas[v] = []
 
-    def adicionar_aresta(self, v1, v2, peso=1):
+    def adicionar_aresta(self,v1, v2, peso=1):
         if v1 in self.vertices and v2 in self.vertices:
             self.arestas[v1].append((v2, peso))
             self.arestas[v2].append((v1, peso))
