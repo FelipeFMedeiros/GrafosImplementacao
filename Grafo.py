@@ -284,6 +284,47 @@ class Grafo:
         
         return grafo
 
+    # Converte uma matriz de adjacência para matriz de incidência
+    def g_mAdj_mInc(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para uma matriz de incidência.
+        
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: A matriz de incidência resultante e lista de arestas [(v1,v2,peso),...]
+        """
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+        
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+        inicio = 0 if tem_indice_zero else 1
+        
+        # Coletar todas as arestas da matriz de adjacência
+        arestas = []
+        for i in range(inicio, n):
+            for j in range(i+1, n):  # Só precisamos da metade superior da matriz (grafo não direcionado)
+                peso = matriz_adj[i][j]
+                if peso > 0:
+                    arestas.append((i, j, peso))
+        
+        # Criar a matriz de incidência (vértices × arestas)
+        num_vertices = n - inicio
+        num_arestas = len(arestas)
+        matriz_inc = [[0] * num_arestas for _ in range(num_vertices)]
+        
+        # Preencher a matriz de incidência
+        for idx_aresta, (v1, v2, _) in enumerate(arestas):
+            # Ajustar índices se necessário
+            v1_idx = v1 - inicio
+            v2_idx = v2 - inicio
+            
+            # Marcar os vértices incidentes a esta aresta
+            matriz_inc[v1_idx][idx_aresta] = 1
+            matriz_inc[v2_idx][idx_aresta] = 1
+        
+        return matriz_inc, arestas
+
     # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""

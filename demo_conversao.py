@@ -46,3 +46,49 @@ for v in sorted(grafo_convertido.vertices):
 # Visualizar o grafo
 plt = grafo_convertido.visualizar("Grafo convertido de matriz para lista de adjacência")
 plt.show()
+
+
+# Teste de conversão de matriz de adjacência para matriz de incidência
+print("\n" + "=" * 70)
+print("Demonstração de conversão de matriz de adjacência para matriz de incidência")
+print("=" * 70)
+
+# Usar a mesma matriz de adjacência definida anteriormente
+
+# Converter para matriz de incidência
+matriz_inc, arestas = grafo.g_mAdj_mInc(matriz_adj)
+
+# Exibir a lista de arestas encontradas
+print("\nArestas identificadas na matriz de adjacência:")
+for idx, (v1, v2, peso) in enumerate(arestas):
+    print(f"Aresta {idx+1}: ({v1}, {v2}) com peso {peso}")
+
+# Exibir a matriz de incidência resultante
+print("\nMatriz de Incidência resultante:")
+print("Linhas = Vértices, Colunas = Arestas")
+print("     ", end="")
+for i in range(len(arestas)):
+    print(f"A{i+1:2} ", end="")
+print()
+
+# Define se a matriz começa a indexar do zero ou do um
+tem_indice_zero = False
+
+for i, linha in enumerate(matriz_inc):
+    # Ajustar índice do vértice baseado na convenção da matriz original
+    idx_vertice = i + (0 if tem_indice_zero else 1)
+    print(f"V{idx_vertice:2}: {linha}")
+
+# Criar um grafo a partir da matriz de incidência para visualização
+# (Note que precisaríamos implementar g_mInc_lAdj para fazer isso diretamente)
+grafo_da_inc = Grafo()
+for v1, v2, peso in arestas:
+    if v1 not in grafo_da_inc.vertices:
+        grafo_da_inc.adicionar_vertice(v1)
+    if v2 not in grafo_da_inc.vertices:
+        grafo_da_inc.adicionar_vertice(v2)
+    grafo_da_inc.adicionar_aresta(v1, v2, peso)
+
+# Visualizar o grafo
+plt = grafo_da_inc.visualizar("Grafo construído a partir da matriz de incidência")
+plt.show()
