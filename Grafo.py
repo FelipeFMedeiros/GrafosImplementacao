@@ -49,6 +49,24 @@ class Grafo:
 
         return mAdj
 
+    #Converte o formalismo em lista de adjacência
+    def g_form_lAdj(self, vertices, arestas):
+        """
+        Convertendo o formalismo G(V,A,w) para uma lista de adjacência
+        v -> lista de vértices [v1, v2, v3, ...]
+        a -> lista de tuplas [(v1, v2, peso), (v2, v3, peso), ...]
+        """
+        self.vertices = set(vertices)
+        self.arestas = {v: [] for v in vertices} #iniciando a lista
+
+        for v1, v2, peso in arestas:
+            self.arestas[v1].append((v2, peso))
+            self.arestas[v2].append((v1, peso))
+            print('Converão concluída')
+
+    #Convertendo formalismo em uma matriz de incidência
+    def g_form_mInc(self):
+
     def a_eh_Adjacente(self, a1, a2):
         v1, u1 = a1  # Primeira aresta (v1--u1)
         v2, u2 = a2  # Segunda aresta (v2--u2)
@@ -57,8 +75,8 @@ class Grafo:
     def v_eh_adjacente(self, v1, v2):
         return any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, []))
 
-    def lista_adjacencia(self, v):
-        return self.arestas.get(v, [])
+    """def lista_adjacencia(self, v):
+        return self.arestas.get(v, [])"""
 
     def grau(self, v):
         return len(self.arestas.get(v, []))
@@ -247,12 +265,16 @@ class Grafo:
 if __name__ == "__main__":
     # Criar um pequeno exemplo
     g = Grafo()
-    g.adicionar_vertice(1)
-    g.adicionar_vertice(2)
+    vertices = [1, 2, 3, 4]
+    arestas = [(1, 2, 5), (2, 3, 7), (3, 4, 2), (1, 4, 10)]
+    g.adicionar_vertice(vertices)
+    #g.adicionar_vertice(2)
     g.adicionar_vertice(3)
-    g.adicionar_aresta(1, 2, 5)
-    g.adicionar_aresta(2, 3, 3)
-    g.adicionar_aresta(3, 1, 3)
+    g.adicionar_aresta(arestas)
+    #g.adicionar_aresta(1, 2, 5)
+    #g.adicionar_aresta(2, 3, 3)
+    #g.adicionar_aresta(3, 1, 3)
+    g.g_form_lAdj(vertices, arestas)
     
     print("Grafo básico:")
     g.imprimir()
