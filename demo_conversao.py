@@ -208,3 +208,70 @@ print(f"É multigrafo? {grafo_da_adj_resultante.eh_multi()}")
 # Visualizar o grafo
 plt = grafo_da_adj_resultante.visualizar("Grafo construído a partir da matriz de adjacência resultante")
 plt.show()
+
+
+#########################################################################################
+
+
+# Teste de conversão de matriz de incidência para lista de adjacência
+print("\n" + "=" * 70)
+print("Demonstração de conversão de matriz de incidência para lista de adjacência")
+print("=" * 70)
+
+# Usamos a matriz de incidência gerada anteriormente
+print("\nUsando a matriz de incidência gerada na seção anterior...")
+
+# Converter matriz de incidência para lista de adjacência diretamente
+grafo_adj_direto = grafo.g_mInc_lAdj(matriz_inc)
+
+# Exibir o grafo resultante
+print("\nGrafo resultante da conversão direta (representação em lista de adjacência):")
+grafo_adj_direto.imprimir()
+
+print("\nNota: A conversão direta não preserva os pesos das arestas originais.")
+print("Vamos criar uma versão que mantém os pesos originais:")
+
+# Para preservar os pesos das arestas originais, vamos melhorar o processo:
+grafo_adj_com_pesos = Grafo()
+
+# Adicionar vértices
+inicio = 0 if tem_indice_zero else 1
+for v in range(inicio, inicio + len(matriz_inc)):
+    grafo_adj_com_pesos.adicionar_vertice(v)
+
+# Para cada aresta identificada na matriz de incidência
+for j in range(len(matriz_inc[0]) if matriz_inc and matriz_inc[0] else 0):
+    # Encontrar vértices incidentes
+    vertices_incidentes = []
+    for i in range(len(matriz_inc)):
+        if matriz_inc[i][j] == 1:
+            vertices_incidentes.append(i + inicio)
+    
+    # Se encontrarmos 2 vértices, adicionar a aresta
+    if len(vertices_incidentes) == 2:
+        v1, v2 = vertices_incidentes
+        
+        # Buscar o peso na lista de arestas original para preservar
+        for aresta in arestas:
+            if (aresta[0] == v1 and aresta[1] == v2) or (aresta[0] == v2 and aresta[1] == v1):
+                peso = aresta[2]
+                break
+        else:
+            peso = 1  # Fallback se não encontrar
+            
+        grafo_adj_com_pesos.adicionar_aresta(v1, v2, peso)
+
+print("\nGrafo resultante com pesos preservados (representação em lista de adjacência):")
+grafo_adj_com_pesos.imprimir()
+
+# Verificar propriedades do grafo resultante
+print("\nPropriedades do grafo resultante:")
+print(f"É conexo? {grafo_adj_com_pesos.eh_conexo()}")
+print(f"É completo? {grafo_adj_com_pesos.eh_completo()}")
+print(f"É regular? {grafo_adj_com_pesos.eh_regular()}")
+print(f"É bipartido? {grafo_adj_com_pesos.eh_bipartido()}")
+print(f"É multigrafo? {grafo_adj_com_pesos.eh_multi()}")
+
+# Visualizar o grafo
+plt = grafo_adj_com_pesos.visualizar("Grafo construído da matriz de incidência para lista de adjacência")
+plt.show()

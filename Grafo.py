@@ -392,6 +392,51 @@ class Grafo:
         
         return matriz_adj
 
+    # Converte uma matriz de incidência para formalismo G(V,(A,w))
+    def g_mInc_lAdj(self, matriz_inc=None):
+        """
+        Converte uma matriz de incidência para uma representação em lista de adjacência.
+        
+        :param matriz_inc: Matriz de incidência (se None, usa self.matriz_incidencia)
+        :return: Um novo grafo com a representação em lista de adjacência
+        """
+        # Usar a matriz armazenada se não fornecida
+        if matriz_inc is None:
+            if not hasattr(self, 'matriz_incidencia'):
+                raise ValueError("Nenhuma matriz de incidência encontrada no grafo")
+            matriz_inc = self.matriz_incidencia
+        
+        # Obter número de vértices e arestas
+        num_vertices = len(matriz_inc)
+        num_arestas = len(matriz_inc[0]) if matriz_inc and matriz_inc[0] else 0
+        
+        # Criar um novo grafo para armazenar o resultado
+        grafo_resultante = Grafo()
+        
+        # Define o índice inicial dos vértices (0 ou 1)
+        indice_inicial = 0  # Assume que os vértices são indexados a partir de 0
+        
+        # Adicionar vértices 
+        for i in range(indice_inicial, indice_inicial + num_vertices):
+            grafo_resultante.adicionar_vertice(i)
+        
+        # Para cada aresta (coluna na matriz de incidência)
+        for j in range(num_arestas):
+            # Encontrar os vértices incidentes a esta aresta
+            vertices_incidentes = []
+            for i in range(num_vertices):
+                if matriz_inc[i][j] == 1:
+                    vertices_incidentes.append(i + indice_inicial)
+            
+            # Se encontrarmos exatamente 2 vértices, adicionar aresta
+            if len(vertices_incidentes) == 2:
+                v1, v2 = vertices_incidentes
+                # Como não temos informação de peso na matriz de incidência básica, 
+                # usamos 1 como padrão
+                grafo_resultante.adicionar_aresta(v1, v2, 1)
+        
+        return grafo_resultante
+
     # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""
