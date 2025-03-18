@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import networkx as nx
+import matplotlib.cm as cm
+from matplotlib.colors import Normalize
+import matplotlib.colors as mcolors
 
 class Grafo:
     def __init__(self):
@@ -60,32 +63,34 @@ class Grafo:
                 return False  # retorna False se algum grau for diferente
         return True  # retorna True se todos os graus forem iguais
 
+    def eh_multi(self):
+        for v1 in self.vertices:
+            vizinhos_vistos = set()
+            for v2, _ in self.arestas[v1]:  # percorre os vizinhos do vértice v1
+                if v2 in vizinhos_vistos:
+                    return True  # Se houver arestas múltiplas, retorna True
+                vizinhos_vistos.add(v2)
+        return False  # Se não houver arestas múltiplas, retorna False
+
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""
-        # Criar um grafo networkx
-        G = nx.Graph()
+        # Criar um grafo networkx multi-aresta
+        G = nx.MultiGraph()  # Usar MultiGraph para suportar múltiplas arestas
 
         # Adicionar vértices
         for v in self.vertices:
             G.add_node(v)
 
         # Adicionar arestas com pesos
-        arestas_adicionadas = set()
         for v in self.arestas:
             for vizinho, peso in self.arestas[v]:
-                # Adiciona cada aresta apenas uma vez (evita duplicação)
-                aresta = tuple(sorted([v, vizinho]))
-                if aresta not in arestas_adicionadas:
+                # Adicionar cada aresta com seu peso
+                # Ordenar para evitar adicionar duas vezes
+                if v < vizinho:
                     G.add_edge(v, vizinho, weight=peso)
-                    arestas_adicionadas.add(aresta)
 
         # Configurar posicionamento dos nós
-        pos = nx.spring_layout(
-            G, seed=42
-        )  # Layout de força direcionada com seed fixo para consistência
-
-        # Pesos para labels de arestas
-        edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
+        pos = nx.spring_layout(G, seed=42)  # Layout de força direcionada com seed fixo
 
         # Criar figura
         plt.figure(figsize=(10, 7))
@@ -95,22 +100,85 @@ class Grafo:
             G, pos, node_size=700, node_color="skyblue", edgecolors="black"
         )
 
-        # Desenhar arestas
-        nx.draw_networkx_edges(G, pos, width=2, alpha=0.7, edge_color="gray")
-
+        # Coletar pesos para criar escala de cores
+        edge_weights = [data["weight"] for _, _, data in G.edges(data=True)]
+        min_weight = min(edge_weights) if edge_weights else 0
+        max_weight = max(edge_weights) if edge_weights else 1
+        
+        # Desenhar arestas com cores baseadas no peso
+        edges = G.edges(data=True)
+        
+        # Criar colormap normalizado
+        if min_weight != max_weight:
+            # Modificar o intervalo de normalização para garantir cores mais visíveis para valores baixos
+            # Vamos usar 0.3 como valor mínimo de intensidade para garantir que arestas de peso baixo fiquem visíveis
+            norm = Normalize(
+                vmin=min_weight - 0.3 * (max_weight - min_weight),  # Estender o intervalo para baixo
+                vmax=max_weight
+            )
+            
+            # Usar um colormap que tenha bom contraste
+            cmap = plt.cm.get_cmap('Blues')
+            
+            # Desenhar arestas com cores baseadas no peso
+            for edge in edges:
+                u, v, data = edge
+                weight = data['weight']
+                color = cmap(norm(weight))
+                # Garantir uma cor minimamente visível
+                color_hex = mcolors.rgb2hex(color[:3])
+                nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], width=2.5, edge_color=color_hex, alpha=0.8)
+        else:
+            # Se todos os pesos forem iguais
+            nx.draw_networkx_edges(G, pos, width=2.5, edge_color="steelblue", alpha=0.8)
+        
         # Adicionar labels nos nós
         nx.draw_networkx_labels(G, pos, font_size=14, font_weight="bold")
 
-        # Adicionar labels nas arestas (pesos)
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=12)
-
+        # Obter arestas entre pares de vértices (para lidar com múltiplas arestas)
+        edge_pairs = {}
+        for u, v, data in G.edges(data=True):
+            key = tuple(sorted([u, v]))
+            if key in edge_pairs:
+                edge_pairs[key].append(data["weight"])
+            else:
+                edge_pairs[key] = [data["weight"]]
+        
+        # Preparar labels para arestas
+        edge_labels = {}
+        for edge, weights in edge_pairs.items():
+            if len(weights) > 1:
+                # Para arestas múltiplas, mostrar como lista ordenada
+                weights.sort()  # Opcional: ordenar os pesos
+                edge_labels[edge] = f"{weights}"
+            else:
+                # Para aresta única, mostrar apenas o número
+                edge_labels[edge] = f"{weights[0]}"
+        
+        # Adicionar labels nas arestas com melhor posicionamento e formatação
+        nx.draw_networkx_edge_labels(
+            G, 
+            pos, 
+            edge_labels=edge_labels,
+            font_size=10,
+            font_color='darkblue',
+            font_weight='bold',
+            bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="gray", alpha=0.8)
+        )
+        
+        # Adicionar barra de cores para indicar o mapeamento de peso
+        if min_weight != max_weight:
+            sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+            sm.set_array([])
+            cbar = plt.colorbar(sm, ax=plt.gca(), shrink=0.7, aspect=20)
+            cbar.set_label("Peso das Arestas", size=12)
+        
         # Configurações do plot
         plt.axis("off")  # Remover eixos
-        plt.title(titulo, fontsize=16)
+        plt.title(titulo, fontsize=16, pad=20)
         plt.tight_layout()
 
-        return plt  # Retorna o objeto plt para permitir personalização adicional
-
+        return plt  # Retorna o objeto plt para personalização adicional
 
 # Exemplo de uso
 if __name__ == "__main__":
@@ -151,6 +219,13 @@ if __name__ == "__main__":
 
     print("\nO grafo é regular?", g.eh_regular())
 
+    print("\nO grafo tem arestas múltiplas?", g.eh_multi())
+    # Adicionar uma aresta múltipla e verificar novamente
+    print("\nAdicionando uma aresta múltipla entre os vértices 1 e 2...")
+    g.adicionar_aresta(1, 2, 8)  # Já existe uma aresta (1,2) com peso 5
+
+    print("O grafo agora tem arestas múltiplas?", g.eh_multi())
+
     # Visualizar o grafo
-    plt = g.visualizar("Grafo de Exemplo")
+    plt = g.visualizar("Grafo com múltiplas arestas")
     plt.show()
