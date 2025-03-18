@@ -325,6 +325,36 @@ class Grafo:
         
         return matriz_inc, arestas
 
+    # Converte uma matriz de adjacência para formalismo G(V,(A,w))
+    def g_mAdj_form(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para o formalismo G(V,(A,w)).
+        
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: Uma tupla (vertices, arestas) onde vertices é uma lista de vértices
+                e arestas é uma lista de tuplas (v1, v2, peso)
+        """
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+        
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+        inicio = 0 if tem_indice_zero else 1
+        
+        # Criar lista de vértices
+        vertices = list(range(inicio, n))
+        
+        # Coletar todas as arestas da matriz de adjacência
+        arestas = []
+        for i in range(inicio, n):
+            for j in range(i+1, n):  # Só precisamos da metade superior da matriz (grafo não direcionado)
+                peso = matriz_adj[i][j]
+                if peso > 0:
+                    arestas.append((i, j, peso))
+        
+        return vertices, arestas
+
     # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""

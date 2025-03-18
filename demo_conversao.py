@@ -48,12 +48,15 @@ plt = grafo_convertido.visualizar("Grafo convertido de matriz para lista de adja
 plt.show()
 
 
+#########################################################################################
+
+
 # Teste de conversão de matriz de adjacência para matriz de incidência
 print("\n" + "=" * 70)
 print("Demonstração de conversão de matriz de adjacência para matriz de incidência")
 print("=" * 70)
 
-# Usar a mesma matriz de adjacência definida anteriormente
+# Usamos a mesma matriz de adjacência definida anteriormente
 
 # Converter para matriz de incidência
 matriz_inc, arestas = grafo.g_mAdj_mInc(matriz_adj)
@@ -72,7 +75,7 @@ for i in range(len(arestas)):
 print()
 
 # Define se a matriz começa a indexar do zero ou do um
-tem_indice_zero = False
+tem_indice_zero = any(matriz_adj[0]) if len(matriz_adj) > 0 else False
 
 for i, linha in enumerate(matriz_inc):
     # Ajustar índice do vértice baseado na convenção da matriz original
@@ -91,4 +94,47 @@ for v1, v2, peso in arestas:
 
 # Visualizar o grafo
 plt = grafo_da_inc.visualizar("Grafo construído a partir da matriz de incidência")
+plt.show()
+
+
+#########################################################################################
+
+
+# Teste de conversão de matriz de adjacência para formalismo G(V,(A,w))
+print("\n" + "=" * 70)
+print("Demonstração de conversão de matriz de adjacência para formalismo G(V,(A,w))")
+print("=" * 70)
+
+# Usamos a mesma matriz de adjacência definida anteriormente
+
+# Converter para formalismo
+vertices, arestas = grafo.g_mAdj_form(matriz_adj)
+
+# Exibir o formalismo resultante
+print("\nFormalismo G(V,(A,w)) resultante:")
+print(f"V = {vertices}")
+print("A = {")
+for v1, v2, peso in arestas:
+    print(f"  ({v1}, {v2}, {peso})")
+print("}")
+
+# Criar um novo grafo a partir do formalismo para verificar
+print("\nCriando um novo grafo a partir do formalismo...")
+grafo_do_formalismo = Grafo()
+for v in vertices:
+    grafo_do_formalismo.adicionar_vertice(v)
+    
+for v1, v2, peso in arestas:
+    grafo_do_formalismo.adicionar_aresta(v1, v2, peso)
+
+print("\nGrafo resultante (representação em lista de adjacência):")
+grafo_do_formalismo.imprimir()
+
+# Verificar se o grafo resultante é idêntico ao grafo_convertido anterior
+print("\nVerificando se o grafo resultante é idêntico ao grafo convertido anteriormente...")
+print(f"Mesmo número de vértices? {len(grafo_do_formalismo.vertices) == len(grafo_convertido.vertices)}")
+print(f"Mesmo número de arestas? {sum(len(adj) for adj in grafo_do_formalismo.arestas.values()) // 2 == len(arestas)}")
+
+# Visualizar o grafo
+plt = grafo_do_formalismo.visualizar("Grafo construído a partir do formalismo G(V,(A,w))")
 plt.show()
