@@ -116,6 +116,10 @@ class Grafo:
     def lista_adjacencia(self, v):
         """
         Imprime a lista de adjacência de um vértice.
+    # Retorna a lista de adjacência de um vértice
+    def lista_adjacencia(self, v):
+
+        Imprime a lista de adjacência de um vértice.
 
         :param v: O vértice para o qual imprimir a lista de adjacência
         :return: A lista de adjacência (para manter compatibilidade)
@@ -194,6 +198,45 @@ class Grafo:
                 return False
         return True
 
+    # Verifica se o grafo é bipartido
+    def eh_bipartido(self):
+        """
+        Verifica se o grafo é bipartido.
+        Um grafo é bipartido se seus vértices podem ser divididos em dois grupos
+        de modo que não haja arestas entre vértices do mesmo grupo.
+        """
+        if not self.vertices:
+            return True  # Um grafo vazio é considerado bipartido
+
+        # Dicionário para armazenar as cores dos vértices (0 ou 1)
+        cores = {}
+
+        # Para cada componente conexo
+        for vertice_inicial in self.vertices:
+            if vertice_inicial in cores:
+                continue  # Vértice já foi colorido
+
+            # Iniciar BFS a partir deste vértice
+            fila = [vertice_inicial]
+            cores[vertice_inicial] = 0  # Atribuir cor inicial
+
+            while fila:
+                atual = fila.pop(0)
+                cor_atual = cores[atual]
+
+                # Verificar todos os vizinhos
+                for vizinho, _ in self.arestas.get(atual, []):
+                    if vizinho not in cores:
+                        # Atribuir cor oposta ao vizinho
+                        cores[vizinho] = 1 - cor_atual
+                        fila.append(vizinho)
+                    elif cores[vizinho] == cor_atual:
+                        # Se o vizinho já tem a mesma cor, o grafo não é bipartido
+                        return False
+
+        return True
+
+    # Retorna os vértices incidentes de uma aresta
     # Verifica se o grafo é bipartido
     def eh_bipartido(self):
         """
@@ -353,6 +396,195 @@ class Grafo:
         return vertices, arestas
 
 
+
+    # Função extra de visualização do grafo
+    # Converte uma matriz de adjacência para lista de adjacência
+    def g_mAdj_lAdj(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para lista de adjacência.
+
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: Um novo grafo com a representação em lista de adjacência
+        """
+        # Criar um novo grafo para armazenar a lista de adjacência
+        grafo = Grafo()
+
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+
+        # Adicionar vértices
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+
+        # Adicionar vértices com base na matriz
+        inicio = 0 if tem_indice_zero else 1
+        for i in range(inicio, n):
+            grafo.adicionar_vertice(i)
+
+        # Adicionar arestas com base na matriz
+        for i in range(inicio, n):
+            for j in range(inicio, n):
+                peso = matriz_adj[i][j]
+                if peso > 0:  # Se há uma aresta
+                    # Adicionar apenas uma vez, já que grafo é não direcionado
+                    if i < j:  # Evita adicionar a mesma aresta duas vezes
+                        grafo.adicionar_aresta(i, j, peso)
+
+        return grafo
+
+    # Converte uma matriz de adjacência para matriz de incidência
+    def g_mAdj_mInc(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para uma matriz de incidência.
+
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: A matriz de incidência resultante e lista de arestas [(v1,v2,peso),...]
+        """
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+        inicio = 0 if tem_indice_zero else 1
+
+        # Coletar todas as arestas da matriz de adjacência
+        arestas = []
+        for i in range(inicio, n):
+            for j in range(i+1, n):  # Só precisamos da metade superior da matriz (grafo não direcionado)
+                peso = matriz_adj[i][j]
+                if peso > 0:
+                    arestas.append((i, j, peso))
+
+        # Criar a matriz de incidência (vértices × arestas)
+        num_vertices = n - inicio
+        num_arestas = len(arestas)
+        matriz_inc = [[0] * num_arestas for _ in range(num_vertices)]
+
+        # Preencher a matriz de incidência
+        for idx_aresta, (v1, v2, _) in enumerate(arestas):
+            # Ajustar índices se necessário
+            v1_idx = v1 - inicio
+            v2_idx = v2 - inicio
+
+            # Marcar os vértices incidentes a esta aresta
+            matriz_inc[v1_idx][idx_aresta] = 1
+            matriz_inc[v2_idx][idx_aresta] = 1
+
+        return matriz_inc, arestas
+
+    # Converte uma matriz de adjacência para formalismo G(V,(A,w))
+    def g_mAdj_form(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para o formalismo G(V,(A,w)).
+
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: Uma tupla (vertices, arestas) onde vertices é uma lista de vértices
+                e arestas é uma lista de tuplas (v1, v2, peso)
+        """
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+        inicio = 0 if tem_indice_zero else 1
+
+        # Criar lista de vértices
+        vertices = list(range(inicio, n))
+
+        # Coletar todas as arestas da matriz de adjacência
+        arestas = []
+        for i in range(inicio, n):
+            for j in range(i+1, n):  # Só precisamos da metade superior da matriz (grafo não direcionado)
+                peso = matriz_adj[i][j]
+                if peso > 0:
+                    arestas.append((i, j, peso))
+
+        return vertices, arestas
+
+    # Converte uma matriz de incidência para lista de adjacência
+    def g_mInc_mAdj(self, matriz_inc=None):
+        """
+        Converte uma matriz de incidência para uma matriz de adjacência.
+
+        :param matriz_inc: Matriz de incidência (se None, usa self.matriz_incidencia)
+        :return: A matriz de adjacência resultante
+        """
+        # Usar a matriz armazenada se não fornecida
+        if matriz_inc is None:
+            if not hasattr(self, 'matriz_incidencia'):
+                raise ValueError("Nenhuma matriz de incidência encontrada no grafo")
+            matriz_inc = self.matriz_incidencia
+
+        # Obter número de vértices e arestas
+        num_vertices = len(matriz_inc)
+        num_arestas = len(matriz_inc[0]) if matriz_inc and matriz_inc[0] else 0
+
+        # Criar matriz de adjacência vazia
+        matriz_adj = [[0] * num_vertices for _ in range(num_vertices)]
+
+        # Para cada aresta (coluna na matriz de incidência)
+        for j in range(num_arestas):
+            # Encontrar os vértices incidentes a esta aresta
+            vertices_incidentes = []
+            for i in range(num_vertices):
+                if matriz_inc[i][j] == 1:
+                    vertices_incidentes.append(i)
+
+            # Se encontrarmos exatamente 2 vértices, adicionar à matriz de adjacência
+            if len(vertices_incidentes) == 2:
+                v1, v2 = vertices_incidentes
+                matriz_adj[v1][v2] = 1
+                matriz_adj[v2][v1] = 1  # Grafo não direcionado
+
+        return matriz_adj
+
+    # Converte uma matriz de incidência para formalismo G(V,(A,w))
+    def g_mInc_lAdj(self, matriz_inc=None):
+        """
+        Converte uma matriz de incidência para uma representação em lista de adjacência.
+
+        :param matriz_inc: Matriz de incidência (se None, usa self.matriz_incidencia)
+        :return: Um novo grafo com a representação em lista de adjacência
+        """
+        # Usar a matriz armazenada se não fornecida
+        if matriz_inc is None:
+            if not hasattr(self, 'matriz_incidencia'):
+                raise ValueError("Nenhuma matriz de incidência encontrada no grafo")
+            matriz_inc = self.matriz_incidencia
+
+        # Obter número de vértices e arestas
+        num_vertices = len(matriz_inc)
+        num_arestas = len(matriz_inc[0]) if matriz_inc and matriz_inc[0] else 0
+
+        # Criar um novo grafo para armazenar o resultado
+        grafo_resultante = Grafo()
+
+        # Define o índice inicial dos vértices (0 ou 1)
+        indice_inicial = 0  # Assume que os vértices são indexados a partir de 0
+
+        # Adicionar vértices
+        for i in range(indice_inicial, indice_inicial + num_vertices):
+            grafo_resultante.adicionar_vertice(i)
+
+        # Para cada aresta (coluna na matriz de incidência)
+        for j in range(num_arestas):
+            # Encontrar os vértices incidentes a esta aresta
+            vertices_incidentes = []
+            for i in range(num_vertices):
+                if matriz_inc[i][j] == 1:
+                    vertices_incidentes.append(i + indice_inicial)
+
+            # Se encontrarmos exatamente 2 vértices, adicionar aresta
+            if len(vertices_incidentes) == 2:
+                v1, v2 = vertices_incidentes
+                # Como não temos informação de peso na matriz de incidência básica,
+                # usamos 1 como padrão
+                grafo_resultante.adicionar_aresta(v1, v2, 1)
+
+        return grafo_resultante
 
     # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
