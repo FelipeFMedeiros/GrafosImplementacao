@@ -138,3 +138,73 @@ print(f"Mesmo número de arestas? {sum(len(adj) for adj in grafo_do_formalismo.a
 # Visualizar o grafo
 plt = grafo_do_formalismo.visualizar("Grafo construído a partir do formalismo G(V,(A,w))")
 plt.show()
+
+
+#########################################################################################
+
+
+# Teste de conversão de matriz de incidência para matriz de adjacência
+print("\n" + "=" * 70)
+print("Demonstração de conversão de matriz de incidência para matriz de adjacência")
+print("=" * 70)
+
+# Usamos a matriz de incidência gerada anteriormente
+print("\nUsando a matriz de incidência gerada na seção anterior...")
+
+# Converter matriz de incidência para matriz de adjacência
+matriz_adj_resultante = grafo.g_mInc_mAdj(matriz_inc)
+
+# Exibir a matriz de adjacência resultante
+print("\nMatriz de Adjacência resultante:")
+print("     ", end="")
+for i in range(len(matriz_adj_resultante)):
+    idx_vertice = i + (0 if tem_indice_zero else 1)
+    print(f"V{idx_vertice:2} ", end="")
+print()
+
+for i in range(len(matriz_adj_resultante)):
+    idx_vertice = i + (0 if tem_indice_zero else 1)
+    print(f"V{idx_vertice:2}: ", end="")
+    for j in range(len(matriz_adj_resultante[i])):
+        print(f"{matriz_adj_resultante[i][j]:3} ", end="")
+    print()
+
+# Criar um grafo a partir da matriz de adjacência resultante
+grafo_da_adj_resultante = Grafo()
+
+# Adicionar vértices
+inicio = 0 if tem_indice_zero else 1
+for v in range(inicio, inicio + len(matriz_adj_resultante)):
+    grafo_da_adj_resultante.adicionar_vertice(v)
+
+# Adicionar arestas com base na matriz de adjacência resultante
+for i in range(len(matriz_adj_resultante)):
+    for j in range(i+1, len(matriz_adj_resultante[i])):
+        if matriz_adj_resultante[i][j] > 0:
+            v1 = i + inicio
+            v2 = j + inicio
+            
+            # Usar o peso da lista de arestas original para manter consistência visual
+            for aresta in arestas:
+                if (aresta[0] == v1 and aresta[1] == v2) or (aresta[0] == v2 and aresta[1] == v1):
+                    peso = aresta[2]
+                    break
+            else:
+                peso = matriz_adj_resultante[i][j]  # Fallback para o valor na matriz
+            
+            grafo_da_adj_resultante.adicionar_aresta(v1, v2, peso)
+
+print("\nGrafo resultante da conversão (representação em lista de adjacência):")
+grafo_da_adj_resultante.imprimir()
+
+# Verificar propriedades do grafo resultante
+print("\nPropriedades do grafo resultante:")
+print(f"É conexo? {grafo_da_adj_resultante.eh_conexo()}")
+print(f"É completo? {grafo_da_adj_resultante.eh_completo()}")
+print(f"É regular? {grafo_da_adj_resultante.eh_regular()}")
+print(f"É bipartido? {grafo_da_adj_resultante.eh_bipartido()}")
+print(f"É multigrafo? {grafo_da_adj_resultante.eh_multi()}")
+
+# Visualizar o grafo
+plt = grafo_da_adj_resultante.visualizar("Grafo construído a partir da matriz de adjacência resultante")
+plt.show()

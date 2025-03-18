@@ -355,6 +355,43 @@ class Grafo:
         
         return vertices, arestas
 
+    # Converte uma matriz de incidência para lista de adjacência
+    def g_mInc_mAdj(self, matriz_inc=None):
+        """
+        Converte uma matriz de incidência para uma matriz de adjacência.
+        
+        :param matriz_inc: Matriz de incidência (se None, usa self.matriz_incidencia)
+        :return: A matriz de adjacência resultante
+        """
+        # Usar a matriz armazenada se não fornecida
+        if matriz_inc is None:
+            if not hasattr(self, 'matriz_incidencia'):
+                raise ValueError("Nenhuma matriz de incidência encontrada no grafo")
+            matriz_inc = self.matriz_incidencia
+        
+        # Obter número de vértices e arestas
+        num_vertices = len(matriz_inc)
+        num_arestas = len(matriz_inc[0]) if matriz_inc and matriz_inc[0] else 0
+        
+        # Criar matriz de adjacência vazia
+        matriz_adj = [[0] * num_vertices for _ in range(num_vertices)]
+        
+        # Para cada aresta (coluna na matriz de incidência)
+        for j in range(num_arestas):
+            # Encontrar os vértices incidentes a esta aresta
+            vertices_incidentes = []
+            for i in range(num_vertices):
+                if matriz_inc[i][j] == 1:
+                    vertices_incidentes.append(i)
+            
+            # Se encontrarmos exatamente 2 vértices, adicionar à matriz de adjacência
+            if len(vertices_incidentes) == 2:
+                v1, v2 = vertices_incidentes
+                matriz_adj[v1][v2] = 1
+                matriz_adj[v2][v1] = 1  # Grafo não direcionado
+        
+        return matriz_adj
+
     # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""
