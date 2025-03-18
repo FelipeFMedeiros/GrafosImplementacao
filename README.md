@@ -47,13 +47,13 @@ Além da estrutura de dados, foram implementadas rotinas para as seguintes funci
 1.  Clone o repositório:
 
     ```bash
-    git clone <URL_do_repositorio>
+    git clone https://github.com/FelipeFMedeiros/GrafosImplementacao.git
     ```
 
 2.  Navegue até o diretório do projeto:
 
     ```bash
-    cd <nome_do_repositorio>
+    cd GrafosImplementacao
     ```
 
 3.  Execute os scripts Python para testar as funcionalidades.
