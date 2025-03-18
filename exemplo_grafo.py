@@ -67,6 +67,10 @@ print("Vértices incidentes à aresta (1, 3):", g.a_lInc((1, 3)))
 
 print("\nLista de adjacência do vértice 1:", g.lista_adjacencia(1))
 
+# Testar se o grafo é bipartido
+print("\nVerificando se o grafo é bipartido:")
+print("O grafo atual é bipartido?", g.eh_bipartido())
+
 # Visualizar o grafo
 plt = g.visualizar("Grafo com múltiplas arestas")
 plt.show()

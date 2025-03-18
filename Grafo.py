@@ -10,11 +10,13 @@ class Grafo:
         self.vertices = set()
         self.arestas = {}  # Dicionário de adjacências {v: [(vizinho, peso)]}
 
+    # Adicionar um vértice ao grafo
     def adicionar_vertice(self, v):
         if v not in self.vertices:
             self.vertices.add(v) # type: ignore
             self.arestas[v] = []
 
+    # Adicionar uma aresta entre dois vértices
     def adicionar_aresta(self, v1, v2, peso=1):
         if v1 in self.vertices and v2 in self.vertices:
             self.arestas[v1].append((v2, peso))
@@ -22,10 +24,12 @@ class Grafo:
         else:
             print("Erro: Um dos vértices não existe.")
 
+    # Imprimir o grafo
     def imprimir(self):
         for v in self.arestas:
             print(f"{v} -> {self.arestas[v]}")
-
+    
+    # Remover um vértice do grafo
     def remover_vertice(self, v):
         if v in self.vertices:
             self.vertices.remove(v)
@@ -33,11 +37,13 @@ class Grafo:
             for adj in self.arestas:
                 self.arestas[adj] = [(v2, p) for v2, p in self.arestas[adj] if v2 != v]
 
+    # Remover uma aresta entre dois vértices
     def remover_aresta(self, v1, v2):
         if v1 in self.vertices and v2 in self.vertices:
             self.arestas[v1] = [(v, p) for v, p in self.arestas[v1] if v != v2]
             self.arestas[v2] = [(v, p) for v, p in self.arestas[v2] if v != v1]
 
+    # Converte o grafo para uma matriz de adjacência
     def g_form_mAdj(self):
         """Converte o grafo para uma matriz de adjacência"""
         n = len(self.vertices)
@@ -65,6 +71,7 @@ class Grafo:
             self.arestas[v2].append((v1, peso))
             print('Converão concluída')
 
+    # Converte o formalismo em matriz de incidência
     def g_form_mInc(self, vertices, arestas):
         """
         Converte um grafo dado no formalismo G(V, A, w) para uma matriz de incidência.
@@ -95,14 +102,17 @@ class Grafo:
 
         return m
 
+    # Verifica se duas arestas são adjacentes
     def a_eh_Adjacente(self, a1, a2):
         v1, u1 = a1  # Primeira aresta (v1--u1)
         v2, u2 = a2  # Segunda aresta (v2--u2)
         return v1 in (v2, u2) or u1 in (v2, u2)
 
+    # Verifica se dois vértices são adjacentes
     def v_eh_adjacente(self, v1, v2):
         return any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, []))
 
+    # Retorna a lista de adjacência de um vértice
     def lista_adjacencia(self, v):
         """
         Imprime a lista de adjacência de um vértice.
@@ -120,9 +130,11 @@ class Grafo:
             print(f"Vértice {v} não existe no grafo")
         return adjacentes
 
+    # Retorna o grau de um vértice
     def grau(self, v):
         return len(self.arestas.get(v, []))
 
+    # Verifica se o grafo é regular
     def eh_regular(self):
         if not self.vertices:
             return True  # Um grafo vazio é considerado regular
@@ -135,6 +147,7 @@ class Grafo:
                 return False  # retorna False se algum grau for diferente
         return True  # retorna True se todos os graus forem iguais
 
+    # Verifica se o grafo tem arestas múltiplas
     def eh_multi(self):
         for v1 in self.vertices:
             vizinhos_vistos = set()
@@ -143,7 +156,7 @@ class Grafo:
                     return True  # Se houver arestas múltiplas, retorna True
                 vizinhos_vistos.add(v2)
         return False  # Se não houver arestas múltiplas, retorna False
-
+    # Verifica se o grafo é conexo
     def eh_conexo(self):
         if not self.vertices:
             return True
@@ -162,6 +175,7 @@ class Grafo:
 
         return len(visitados) == len(self.vertices)
 
+    # Verifica se o grafo é completo
     def eh_completo(self):
         """
         Verifica se o grafo é completo.
@@ -179,6 +193,45 @@ class Grafo:
                 return False
         return True
 
+    # Verifica se o grafo é bipartido
+    def eh_bipartido(self):
+        """
+        Verifica se o grafo é bipartido.
+        Um grafo é bipartido se seus vértices podem ser divididos em dois grupos
+        de modo que não haja arestas entre vértices do mesmo grupo.
+        """
+        if not self.vertices:
+            return True  # Um grafo vazio é considerado bipartido
+        
+        # Dicionário para armazenar as cores dos vértices (0 ou 1)
+        cores = {}
+        
+        # Para cada componente conexo
+        for vertice_inicial in self.vertices:
+            if vertice_inicial in cores:
+                continue  # Vértice já foi colorido
+                
+            # Iniciar BFS a partir deste vértice
+            fila = [vertice_inicial]
+            cores[vertice_inicial] = 0  # Atribuir cor inicial
+            
+            while fila:
+                atual = fila.pop(0)
+                cor_atual = cores[atual]
+                
+                # Verificar todos os vizinhos
+                for vizinho, _ in self.arestas.get(atual, []):
+                    if vizinho not in cores:
+                        # Atribuir cor oposta ao vizinho
+                        cores[vizinho] = 1 - cor_atual
+                        fila.append(vizinho)
+                    elif cores[vizinho] == cor_atual:
+                        # Se o vizinho já tem a mesma cor, o grafo não é bipartido
+                        return False
+        
+        return True
+
+    # Retorna os vértices incidentes de uma aresta
     def a_lInc(self, aresta):
         """
         Retorna os vértices incidentes de uma aresta.
@@ -195,6 +248,7 @@ class Grafo:
         else:
             return []  # A aresta não existe no grafo
 
+    # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""
         # Criar um grafo networkx multi-aresta
