@@ -12,7 +12,7 @@ class Grafo:
 
     def adicionar_vertice(self, v):
         if v not in self.vertices:
-            self.vertices.add(v)
+            self.vertices.add(v) # type: ignore
             self.arestas[v] = []
 
     def adicionar_aresta(self, v1, v2, peso=1):
@@ -103,8 +103,22 @@ class Grafo:
     def v_eh_adjacente(self, v1, v2):
         return any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, []))
 
-    #def lista_adjacencia(self, v):
-    #    return self.arestas.get(v, []) ????
+    def lista_adjacencia(self, v):
+        """
+        Imprime a lista de adjacência de um vértice.
+        
+        :param v: O vértice para o qual imprimir a lista de adjacência
+        :return: A lista de adjacência (para manter compatibilidade)
+        """
+        adjacentes = self.arestas.get(v, [])
+        if v in self.vertices:
+            if adjacentes:
+                print(f"Vértice {v} é adjacente a: {[vizinho for vizinho, _ in adjacentes]}")
+            else:
+                print(f"Vértice {v} não possui vértices adjacentes")
+        else:
+            print(f"Vértice {v} não existe no grafo")
+        return adjacentes
 
     def grau(self, v):
         return len(self.arestas.get(v, []))
