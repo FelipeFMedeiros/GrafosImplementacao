@@ -56,7 +56,13 @@ Além da estrutura de dados, foram implementadas rotinas para as seguintes funci
     cd GrafosImplementacao
     ```
 
-3.  Execute os scripts Python para testar as funcionalidades.
+3. Instale as dependências:
+
+    ```bash
+    pip install matplotlib networkx
+    ```
+
+4.  Execute os scripts Python para testar as funcionalidades.
 
 ## 🧪 Critérios de Avaliação
 
