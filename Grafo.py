@@ -72,6 +72,24 @@ class Grafo:
                 vizinhos_vistos.add(v2)
         return False  # Se não houver arestas múltiplas, retorna False
 
+    def eh_conexo(self):
+        if not self.vertices:
+            return True
+            
+        v_inicial = next(iter(self.vertices))
+        visitados = set()
+        
+        def busca(v):
+            if v in visitados:
+                return
+            visitados.add(v)
+            for vizinho, peso in self.arestas.get(v, []):  # Desempacotar a tupla corretamente
+                busca(vizinho)
+        
+        busca(v_inicial)
+        
+        return len(visitados) == len(self.vertices)
+
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""
         # Criar um grafo networkx multi-aresta
@@ -225,6 +243,20 @@ if __name__ == "__main__":
     g.adicionar_aresta(1, 2, 8)  # Já existe uma aresta (1,2) com peso 5
 
     print("O grafo agora tem arestas múltiplas?", g.eh_multi())
+
+     # Testar se o grafo é conexo
+    print("\nVerificando se o grafo é conexo:")
+    print("O grafo atual é conexo?", g.eh_conexo())
+
+    # Criar um grafo desconexo adicionando um vértice isolado
+    print("\nCriando um grafo desconexo adicionando um vértice isolado...")
+    g.adicionar_vertice(7)
+    print("O grafo agora é conexo?", g.eh_conexo())
+
+    # Tornar o grafo conexo novamente
+    print("\nTornando o grafo conexo novamente...")
+    g.adicionar_aresta(6, 7, 2)
+    print("O grafo agora é conexo?", g.eh_conexo())
 
     # Visualizar o grafo
     plt = g.visualizar("Grafo com múltiplas arestas")
