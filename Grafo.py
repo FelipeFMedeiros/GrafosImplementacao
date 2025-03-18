@@ -49,54 +49,6 @@ class Grafo:
 
         return mAdj
 
-    #Converte o formalismo em lista de adjacência
-    def g_form_lAdj(self, vertices, arestas):
-        """
-        Convertendo o formalismo G(V,A,w) para uma lista de adjacência
-        v -> lista de vértices [v1, v2, v3, ...]
-        a -> lista de tuplas [(v1, v2, peso), (v2, v3, peso), ...]
-        """
-        self.vertices = set(vertices)
-        self.arestas = {v: [] for v in vertices} #iniciando a lista
-
-        for v1, v2, peso in arestas:
-            self.arestas[v1].append((v2, peso))
-            self.arestas[v2].append((v1, peso))
-            print('Converão concluída')
-
-    #Convertendo formalismo em uma matriz de incidência
-    def g_form_mInc(self, vertices, arestas):
-        """
-        Cada entrada M[i][j] indica a relação entre o vértice vi e aresta ej
-        1 se vi é um dos extremos da aresta ej
-        0 caso contrário
-
-        M nxm preenchida por 0. Mapear arestas para colunas e os vértices para linhas
-        Pra cada aresta (v1, v2), é marcado M[v1][e] = 1 e M[v2][e] =1
-        """
-        self.vertices = list(vertices) #pra manter a ordem dos vértices
-        num_vertices = len(vertices)
-        num_arestas = len(arestas)
-
-        #Criar matriz nxm preenchida por 0
-        m = [[0] * num_arestas for _ in range(num_vertices)]
-
-        #Criar um mapeamento vértice -> índice da matriz
-        indice_vertice = {v: i for i, v in enumerate(self.vertices)}
-
-        #Preencher matriz de incidência
-        for j, (v1, v2, peso) in enumerate(arestas): #j é o índice da aresta
-            i1 = indice_vertice[v1] #índice do vértice 1
-            i2 = indice_vertice[v2]  #índice do vértice 2
-            m[i1][j] = 1
-            m[i2][j] = 1
-
-        #Armazenando a matriz no grafo
-        self.matriz_incidencia = m
-        print('Conversão para matriz de incidência concluída! :D')
-        return m
-
-
     def a_eh_Adjacente(self, a1, a2):
         v1, u1 = a1  # Primeira aresta (v1--u1)
         v2, u2 = a2  # Segunda aresta (v2--u2)
@@ -105,8 +57,8 @@ class Grafo:
     def v_eh_adjacente(self, v1, v2):
         return any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, []))
 
-    """def lista_adjacencia(self, v):
-        return self.arestas.get(v, [])"""
+    def lista_adjacencia(self, v):
+        return self.arestas.get(v, [])
 
     def grau(self, v):
         return len(self.arestas.get(v, []))
@@ -295,16 +247,12 @@ class Grafo:
 if __name__ == "__main__":
     # Criar um pequeno exemplo
     g = Grafo()
-    vertices = [1, 2, 3, 4]
-    arestas = [(1, 2, 5), (2, 3, 7), (3, 4, 2), (1, 4, 10)]
-    g.adicionar_vertice(vertices)
-    #g.adicionar_vertice(2)
+    g.adicionar_vertice(1)
+    g.adicionar_vertice(2)
     g.adicionar_vertice(3)
-    g.adicionar_aresta(arestas)
-    #g.adicionar_aresta(1, 2, 5)
-    #g.adicionar_aresta(2, 3, 3)
-    #g.adicionar_aresta(3, 1, 3)
-    g.g_form_lAdj(vertices, arestas)
+    g.adicionar_aresta(1, 2, 5)
+    g.adicionar_aresta(2, 3, 3)
+    g.adicionar_aresta(3, 1, 3)
     
     print("Grafo básico:")
     g.imprimir()
