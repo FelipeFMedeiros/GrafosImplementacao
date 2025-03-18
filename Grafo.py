@@ -4,6 +4,7 @@ import matplotlib.cm as cm
 from matplotlib.colors import Normalize
 import matplotlib.colors as mcolors
 
+
 class Grafo:
     def __init__(self):
         self.vertices = set()
@@ -39,7 +40,7 @@ class Grafo:
 
     def g_form_mAdj(self):
         """Converte o grafo para uma matriz de adjacência"""
-        n = len(self.vertices)  
+        n = len(self.vertices)
         mAdj = [[0] * (n + 1) for _ in range(n + 1)]  # Matriz de (n+1)x(n+1) para índices 1 a n vértices
 
         for v in self.arestas:
@@ -49,6 +50,51 @@ class Grafo:
 
         return mAdj
 
+    # Converte o formalismo em lista de adjacência
+    def g_form_lAdj(self, vertices, arestas):
+        """
+        Convertendo o formalismo G(V,A,w) para uma lista de adjacência
+        v -> lista de vértices [v1, v2, v3, ...]
+        a -> lista de tuplas [(v1, v2, peso), (v2, v3, peso), ...]
+        """
+        self.vertices = set(vertices)
+        self.arestas = {v: [] for v in vertices}  # iniciando a lista
+
+        for v1, v2, peso in arestas:
+            self.arestas[v1].append((v2, peso))
+            self.arestas[v2].append((v1, peso))
+            print('Converão concluída')
+
+    def g_form_mInc(self, vertices, arestas):
+        """
+        Converte um grafo dado no formalismo G(V, A, w) para uma matriz de incidência.
+
+        :param vertices: Lista de vértices [v1, v2, v3, ...]
+        :param arestas: Lista de tuplas [(v1, v2, peso), (v2, v3, peso), ...]
+        """
+        self.vertices = list(vertices)  # Lista para manter ordem dos vértices
+        num_vertices = len(vertices)
+        num_arestas = len(arestas)
+
+        # Criar matriz n x m preenchida com zeros
+        m = [[0] * num_arestas for _ in range(num_vertices)]
+
+        # Criar um mapeamento vértice -> índice da matriz
+        indice_vertice = {v: i for i, v in enumerate(self.vertices)}
+
+        # Preencher matriz de incidência
+        for j, (v1, v2, peso) in enumerate(arestas):  # j é o índice da aresta
+            i1 = indice_vertice[v1]  # Índice do vértice v1
+            i2 = indice_vertice[v2]  # Índice do vértice v2
+            m[i1][j] = 1
+            m[i2][j] = 1
+
+        # Armazena a matriz no grafo
+        self.matriz_incidencia = m
+        print("Conversão para matriz de incidência concluída!")
+
+        return m
+
     def a_eh_Adjacente(self, a1, a2):
         v1, u1 = a1  # Primeira aresta (v1--u1)
         v2, u2 = a2  # Segunda aresta (v2--u2)
@@ -57,8 +103,8 @@ class Grafo:
     def v_eh_adjacente(self, v1, v2):
         return any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, []))
 
-    def lista_adjacencia(self, v):
-        return self.arestas.get(v, [])
+    #def lista_adjacencia(self, v):
+    #    return self.arestas.get(v, []) ????
 
     def grau(self, v):
         return len(self.arestas.get(v, []))
@@ -87,19 +133,19 @@ class Grafo:
     def eh_conexo(self):
         if not self.vertices:
             return True
-            
+
         v_inicial = next(iter(self.vertices))
         visitados = set()
-        
+
         def busca(v):
             if v in visitados:
                 return
             visitados.add(v)
             for vizinho, peso in self.arestas.get(v, []):  # Desempacotar a tupla corretamente
                 busca(vizinho)
-        
+
         busca(v_inicial)
-        
+
         return len(visitados) == len(self.vertices)
 
     def eh_completo(self):
@@ -109,7 +155,7 @@ class Grafo:
         """
         if not self.vertices or len(self.vertices) == 1:
             return True  # Grafo vazio ou com apenas um vértice é considerado completo
-            
+
         n = len(self.vertices)  # Número de vértices
         # Em um grafo completo, cada vértice deve ter grau n-1
         for v in self.vertices:
@@ -124,11 +170,11 @@ class Grafo:
         Retorna os vértices incidentes de uma aresta.
         """
         v1, v2 = aresta
-        
+
         # Verifica se ambos os vértices existem no grafo
         if v1 not in self.vertices or v2 not in self.vertices:
             return []
-        
+
         # Verifica se a aresta existe no grafo
         if any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, [])):
             return [v1, v2]
@@ -167,10 +213,10 @@ class Grafo:
         edge_weights = [data["weight"] for _, _, data in G.edges(data=True)]
         min_weight = min(edge_weights) if edge_weights else 0
         max_weight = max(edge_weights) if edge_weights else 1
-        
+
         # Desenhar arestas com cores baseadas no peso
         edges = G.edges(data=True)
-        
+
         # Criar colormap normalizado
         if min_weight != max_weight:
             # Modificar o intervalo de normalização para garantir cores mais visíveis para valores baixos
@@ -179,10 +225,10 @@ class Grafo:
                 vmin=min_weight - 0.3 * (max_weight - min_weight),  # Estender o intervalo para baixo
                 vmax=max_weight
             )
-            
+
             # Usar um colormap que tenha bom contraste
             cmap = plt.cm.get_cmap('Blues')
-            
+
             # Desenhar arestas com cores baseadas no peso
             for edge in edges:
                 u, v, data = edge
@@ -194,7 +240,7 @@ class Grafo:
         else:
             # Se todos os pesos forem iguais
             nx.draw_networkx_edges(G, pos, width=2.5, edge_color="steelblue", alpha=0.8)
-        
+
         # Adicionar labels nos nós
         nx.draw_networkx_labels(G, pos, font_size=14, font_weight="bold")
 
@@ -206,7 +252,7 @@ class Grafo:
                 edge_pairs[key].append(data["weight"])
             else:
                 edge_pairs[key] = [data["weight"]]
-        
+
         # Preparar labels para arestas
         edge_labels = {}
         for edge, weights in edge_pairs.items():
@@ -217,25 +263,25 @@ class Grafo:
             else:
                 # Para aresta única, mostrar apenas o número
                 edge_labels[edge] = f"{weights[0]}"
-        
+
         # Adicionar labels nas arestas com melhor posicionamento e formatação
         nx.draw_networkx_edge_labels(
-            G, 
-            pos, 
+            G,
+            pos,
             edge_labels=edge_labels,
             font_size=10,
             font_color='darkblue',
             font_weight='bold',
             bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="gray", alpha=0.8)
         )
-        
+
         # Adicionar barra de cores para indicar o mapeamento de peso
         if min_weight != max_weight:
             sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
             sm.set_array([])
             cbar = plt.colorbar(sm, ax=plt.gca(), shrink=0.7, aspect=20)
             cbar.set_label("Peso das Arestas", size=12)
-        
+
         # Configurações do plot
         plt.axis("off")  # Remover eixos
         plt.title(titulo, fontsize=16, pad=20)
@@ -243,17 +289,23 @@ class Grafo:
 
         return plt  # Retorna o objeto plt para personalização adicional
 
+
 # Exemplo mínimo de uso | Exemlo real no arquivo exemplo_grafo.py
 if __name__ == "__main__":
     # Criar um pequeno exemplo
     g = Grafo()
-    g.adicionar_vertice(1)
-    g.adicionar_vertice(2)
-    g.adicionar_vertice(3)
-    g.adicionar_aresta(1, 2, 5)
-    g.adicionar_aresta(2, 3, 3)
-    g.adicionar_aresta(3, 1, 3)
-    
+    vertices = [1, 2, 3, 4, 5, 6]
+    arestas = [(1, 2, 5), (2, 3, 7), (3, 4, 2), (1, 4, 10), (4, 5, 8), (5, 6, 11), (3, 6, 12)]
+    # g.adicionar_vertice(1)
+    # g.adicionar_vertice(2)
+    # g.adicionar_vertice(3)
+    # g.adicionar_aresta(1, 2, 5)
+    # g.adicionar_aresta(2, 3, 3)
+    # g.adicionar_aresta(3, 1, 3)
+
+    print("Lista de adjacência:")
+    g.g_form_lAdj(vertices, arestas)
+
     print("Grafo básico:")
     g.imprimir()
     g.visualizar("Exemplo básico").show()
