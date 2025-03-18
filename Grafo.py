@@ -40,12 +40,15 @@ class Grafo:
     def g_form_mAdj(self):
         """Converte o grafo para uma matriz de adjacência"""
         n = len(self.vertices)  
-        mAdj = [[0] * (n + 1) for _ in range(n + 1)]  # Matriz de (n+1)x(n+1) para índices 1 a n vértices
+        print(n)
+        mAdj = [[0] * n for _ in range(n)]  # Matriz de nxn para índices 1 a n vértices
 
         for v in self.arestas:
             for u, w in self.arestas[v]:
-                mAdj[v][u] = w
-                mAdj[u][v] = w  # Grafo não direcionado
+                mAdj[v-1][u-1] = w
+                mAdj[u-1][v-1] = w  # Grafo não direcionado
+
+        print(mAdj) # Teste de funcionalidade
 
         return mAdj
 
@@ -253,6 +256,8 @@ if __name__ == "__main__":
     g.adicionar_aresta(1, 2, 5)
     g.adicionar_aresta(2, 3, 3)
     g.adicionar_aresta(3, 1, 3)
+
+    g.g_form_mAdj()
     
     print("Grafo básico:")
     g.imprimir()
