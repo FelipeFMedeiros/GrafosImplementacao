@@ -90,6 +90,39 @@ class Grafo:
         
         return len(visitados) == len(self.vertices)
 
+    def eh_completo(self):
+        """
+        Verifica se o grafo é completo.
+        Um grafo é completo se todos os vértices estão conectados entre si.
+        """
+        if not self.vertices or len(self.vertices) == 1:
+            return True  # Grafo vazio ou com apenas um vértice é considerado completo
+            
+        n = len(self.vertices)  # Número de vértices
+        # Em um grafo completo, cada vértice deve ter grau n-1
+        for v in self.vertices:
+            # Contamos apenas vértices únicos para ignorar arestas múltiplas
+            vizinhos_unicos = set(vizinho for vizinho, _ in self.arestas.get(v, []))
+            if len(vizinhos_unicos) != n - 1:
+                return False
+        return True
+
+    def a_lInc(self, aresta):
+        """
+        Retorna os vértices incidentes de uma aresta.
+        """
+        v1, v2 = aresta
+        
+        # Verifica se ambos os vértices existem no grafo
+        if v1 not in self.vertices or v2 not in self.vertices:
+            return []
+        
+        # Verifica se a aresta existe no grafo
+        if any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, [])):
+            return [v1, v2]
+        else:
+            return []  # A aresta não existe no grafo
+
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""
         # Criar um grafo networkx multi-aresta
@@ -257,6 +290,14 @@ if __name__ == "__main__":
     print("\nTornando o grafo conexo novamente...")
     g.adicionar_aresta(6, 7, 2)
     print("O grafo agora é conexo?", g.eh_conexo())
+
+    # Testar se o grafo é completo
+    print("\nVerificando se o grafo é completo:")
+    print("O grafo atual é completo?", g.eh_completo())
+
+    # Testar a função a_lInc
+    print("\nVértices incidentes à aresta (1, 2):", g.a_lInc((1, 2)))
+    print("Vértices incidentes à aresta (1, 3):", g.a_lInc((1, 3)))
 
     # Visualizar o grafo
     plt = g.visualizar("Grafo com múltiplas arestas")
