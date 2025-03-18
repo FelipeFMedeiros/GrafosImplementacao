@@ -37,6 +37,18 @@ class Grafo:
             self.arestas[v1] = [(v, p) for v, p in self.arestas[v1] if v != v2]
             self.arestas[v2] = [(v, p) for v, p in self.arestas[v2] if v != v1]
 
+    def g_form_mAdj(self):
+        """Converte o grafo para uma matriz de adjacência"""
+        n = len(self.vertices)  
+        mAdj = [[0] * (n + 1) for _ in range(n + 1)]  # Matriz de (n+1)x(n+1) para índices 1 a n vértices
+
+        for v in self.arestas:
+            for u, w in self.arestas[v]:
+                mAdj[v][u] = w
+                mAdj[u][v] = w  # Grafo não direcionado
+
+        return mAdj
+
     def a_eh_Adjacente(self, a1, a2):
         v1, u1 = a1  # Primeira aresta (v1--u1)
         v2, u2 = a2  # Segunda aresta (v2--u2)
