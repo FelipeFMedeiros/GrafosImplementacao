@@ -30,8 +30,6 @@ print("\nVerificando adjacência entre vértices:")
 print("1 e 2 são adjacentes?", g.v_eh_adjacente(1, 2))
 print("1 e 6 são adjacentes?", g.v_eh_adjacente(1, 6))
 
-print("\nLista de adjacência do vértice 3:", g.lista_adjacencia(3))
-
 print("\nGraus dos vértices:")
 for v in g.vertices:
     print(f"Grau do vértice {v}: {g.grau(v)}")
@@ -66,6 +64,12 @@ print("O grafo atual é completo?", g.eh_completo())
 # Testar a função a_lInc
 print("\nVértices incidentes à aresta (1, 2):", g.a_lInc((1, 2)))
 print("Vértices incidentes à aresta (1, 3):", g.a_lInc((1, 3)))
+
+print("\nLista de adjacência do vértice 1:", g.lista_adjacencia(1))
+
+# Testar se o grafo é bipartido
+print("\nVerificando se o grafo é bipartido:")
+print("O grafo atual é bipartido?", g.eh_bipartido())
 
 # Visualizar o grafo
 plt = g.visualizar("Grafo com múltiplas arestas")
