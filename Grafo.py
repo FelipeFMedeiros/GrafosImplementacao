@@ -10,11 +10,13 @@ class Grafo:
         self.vertices = set()
         self.arestas = {}  # Dicionário de adjacências {v: [(vizinho, peso)]}
 
+    # Adicionar um vértice ao grafo
     def adicionar_vertice(self, v):
         if v not in self.vertices:
-            self.vertices.add(v)
+            self.vertices.add(v) # type: ignore
             self.arestas[v] = []
 
+    # Adicionar uma aresta entre dois vértices
     def adicionar_aresta(self, v1, v2, peso=1):
         if v1 in self.vertices and v2 in self.vertices:
             self.arestas[v1].append((v2, peso))
@@ -22,10 +24,12 @@ class Grafo:
         else:
             print("Erro: Um dos vértices não existe.")
 
+    # Imprimir o grafo
     def imprimir(self):
         for v in self.arestas:
             print(f"{v} -> {self.arestas[v]}")
 
+    # Remover um vértice do grafo
     def remover_vertice(self, v):
         if v in self.vertices:
             self.vertices.remove(v)
@@ -33,11 +37,13 @@ class Grafo:
             for adj in self.arestas:
                 self.arestas[adj] = [(v2, p) for v2, p in self.arestas[adj] if v2 != v]
 
+    # Remover uma aresta entre dois vértices
     def remover_aresta(self, v1, v2):
         if v1 in self.vertices and v2 in self.vertices:
             self.arestas[v1] = [(v, p) for v, p in self.arestas[v1] if v != v2]
             self.arestas[v2] = [(v, p) for v, p in self.arestas[v2] if v != v1]
 
+    # Converte o grafo para uma matriz de adjacência
     def g_form_mAdj(self):
         """Converte o grafo para uma matriz de adjacência"""
         n = len(self.vertices)
@@ -65,6 +71,7 @@ class Grafo:
             self.arestas[v2].append((v1, peso))
             print('Converão concluída')
 
+    # Converte o formalismo em matriz de incidência
     def g_form_mInc(self, vertices, arestas):
         """
         Converte um grafo dado no formalismo G(V, A, w) para uma matriz de incidência.
@@ -95,20 +102,39 @@ class Grafo:
 
         return m
 
+    # Verifica se duas arestas são adjacentes
     def a_eh_Adjacente(self, a1, a2):
         v1, u1 = a1  # Primeira aresta (v1--u1)
         v2, u2 = a2  # Segunda aresta (v2--u2)
         return v1 in (v2, u2) or u1 in (v2, u2)
 
+    # Verifica se dois vértices são adjacentes
     def v_eh_adjacente(self, v1, v2):
         return any(v2 == vizinho for vizinho, _ in self.arestas.get(v1, []))
 
-    #def lista_adjacencia(self, v):
-    #    return self.arestas.get(v, []) ????
+    # Retorna a lista de adjacência de um vértice
+    def lista_adjacencia(self, v):
+        """
+        Imprime a lista de adjacência de um vértice.
 
+        :param v: O vértice para o qual imprimir a lista de adjacência
+        :return: A lista de adjacência (para manter compatibilidade)
+        """
+        adjacentes = self.arestas.get(v, [])
+        if v in self.vertices:
+            if adjacentes:
+                print(f"Vértice {v} é adjacente a: {[vizinho for vizinho, _ in adjacentes]}")
+            else:
+                print(f"Vértice {v} não possui vértices adjacentes")
+        else:
+            print(f"Vértice {v} não existe no grafo")
+        return adjacentes
+
+    # Retorna o grau de um vértice
     def grau(self, v):
         return len(self.arestas.get(v, []))
 
+    # Verifica se o grafo é regular
     def eh_regular(self):
         if not self.vertices:
             return True  # Um grafo vazio é considerado regular
@@ -121,6 +147,7 @@ class Grafo:
                 return False  # retorna False se algum grau for diferente
         return True  # retorna True se todos os graus forem iguais
 
+    # Verifica se o grafo tem arestas múltiplas
     def eh_multi(self):
         for v1 in self.vertices:
             vizinhos_vistos = set()
@@ -130,6 +157,7 @@ class Grafo:
                 vizinhos_vistos.add(v2)
         return False  # Se não houver arestas múltiplas, retorna False
 
+    # Verifica se o grafo é conexo
     def eh_conexo(self):
         if not self.vertices:
             return True
@@ -148,6 +176,7 @@ class Grafo:
 
         return len(visitados) == len(self.vertices)
 
+    # Verifica se o grafo é completo
     def eh_completo(self):
         """
         Verifica se o grafo é completo.
@@ -165,6 +194,45 @@ class Grafo:
                 return False
         return True
 
+    # Verifica se o grafo é bipartido
+    def eh_bipartido(self):
+        """
+        Verifica se o grafo é bipartido.
+        Um grafo é bipartido se seus vértices podem ser divididos em dois grupos
+        de modo que não haja arestas entre vértices do mesmo grupo.
+        """
+        if not self.vertices:
+            return True  # Um grafo vazio é considerado bipartido
+
+        # Dicionário para armazenar as cores dos vértices (0 ou 1)
+        cores = {}
+
+        # Para cada componente conexo
+        for vertice_inicial in self.vertices:
+            if vertice_inicial in cores:
+                continue  # Vértice já foi colorido
+
+            # Iniciar BFS a partir deste vértice
+            fila = [vertice_inicial]
+            cores[vertice_inicial] = 0  # Atribuir cor inicial
+
+            while fila:
+                atual = fila.pop(0)
+                cor_atual = cores[atual]
+
+                # Verificar todos os vizinhos
+                for vizinho, _ in self.arestas.get(atual, []):
+                    if vizinho not in cores:
+                        # Atribuir cor oposta ao vizinho
+                        cores[vizinho] = 1 - cor_atual
+                        fila.append(vizinho)
+                    elif cores[vizinho] == cor_atual:
+                        # Se o vizinho já tem a mesma cor, o grafo não é bipartido
+                        return False
+
+        return True
+
+    # Retorna os vértices incidentes de uma aresta
     def a_lInc(self, aresta):
         """
         Retorna os vértices incidentes de uma aresta.
@@ -181,6 +249,112 @@ class Grafo:
         else:
             return []  # A aresta não existe no grafo
 
+    # Converte uma matriz de adjacência para lista de adjacência
+    def g_mAdj_lAdj(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para lista de adjacência.
+
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: Um novo grafo com a representação em lista de adjacência
+        """
+        # Criar um novo grafo para armazenar a lista de adjacência
+        grafo = Grafo()
+
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+
+        # Adicionar vértices
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+
+        # Adicionar vértices com base na matriz
+        inicio = 0 if tem_indice_zero else 1
+        for i in range(inicio, n):
+            grafo.adicionar_vertice(i)
+
+        # Adicionar arestas com base na matriz
+        for i in range(inicio, n):
+            for j in range(inicio, n):
+                peso = matriz_adj[i][j]
+                if peso > 0:  # Se há uma aresta
+                    # Adicionar apenas uma vez, já que grafo é não direcionado
+                    if i < j:  # Evita adicionar a mesma aresta duas vezes
+                        grafo.adicionar_aresta(i, j, peso)
+
+        return grafo
+
+    # Converte uma matriz de adjacência para matriz de incidência
+    def g_mAdj_mInc(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para uma matriz de incidência.
+
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: A matriz de incidência resultante e lista de arestas [(v1,v2,peso),...]
+        """
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+        inicio = 0 if tem_indice_zero else 1
+
+        # Coletar todas as arestas da matriz de adjacência
+        arestas = []
+        for i in range(inicio, n):
+            for j in range(i+1, n):  # Só precisamos da metade superior da matriz (grafo não direcionado)
+                peso = matriz_adj[i][j]
+                if peso > 0:
+                    arestas.append((i, j, peso))
+
+        # Criar a matriz de incidência (vértices × arestas)
+        num_vertices = n - inicio
+        num_arestas = len(arestas)
+        matriz_inc = [[0] * num_arestas for _ in range(num_vertices)]
+
+        # Preencher a matriz de incidência
+        for idx_aresta, (v1, v2, _) in enumerate(arestas):
+            # Ajustar índices se necessário
+            v1_idx = v1 - inicio
+            v2_idx = v2 - inicio
+
+            # Marcar os vértices incidentes a esta aresta
+            matriz_inc[v1_idx][idx_aresta] = 1
+            matriz_inc[v2_idx][idx_aresta] = 1
+
+        return matriz_inc, arestas
+
+    #Função que implementa a conversão de uma Matriz Incidência para o formalismo
+    def g_mInc_form(self):
+        """
+        n  -> representam os vértices
+        m -> representam as arestas
+         Segue uma ideia similar a conversão do formalismo para a matriz de incidência
+         Preciso gerar a lista de arestas na forma (v1, v2, peso), assumindo o peso padrão como 1
+        """
+        num_vertices = len(self.matriz_incidencia)
+        num_arestas = len(self.matriz_incidencia[0]) if num_vertices > 0 else 0
+
+        #Criar lista de vértices
+        vertices = list(self.vertices)
+
+        #Criar uma lista de arestas
+        arestas = []
+
+        for j in range(num_arestas): #percorre cada coluna (arestas)
+            vertices_conectados = [i for i in range(num_vertices) if self.matriz_incidencia[i][j]==1]
+
+            if len(vertices_conectados) == 2: #deve haver exatamente dois vértices conectados
+                v1, v2 = vertices[vertices_conectados[0]], vertices[vertices_conectados[1]]
+                arestas.append((v1,v2, 1)) #Peso 1 por padrão
+
+        print("A conversão da matriz de incidência para formalismo foi concluída")
+        return vertices, arestas
+
+
+
+    # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
         """Visualiza o grafo usando matplotlib e networkx."""
         # Criar um grafo networkx multi-aresta
@@ -296,6 +470,18 @@ if __name__ == "__main__":
     g = Grafo()
     vertices = [1, 2, 3, 4, 5, 6]
     arestas = [(1, 2, 5), (2, 3, 7), (3, 4, 2), (1, 4, 10), (4, 5, 8), (5, 6, 11), (3, 6, 12)]
+    matriz_incidencia = [
+        [1,0,0],
+        [1,1,0],
+        [0,1,1],
+        [0,0,1]
+    ]
+    g.vertices = set(vertices)
+    g.matriz_incidencia = matriz_incidencia
+    v_formalismo, a_formalismo = g.g_mInc_form()
+
+    print(f"Vértices: {v_formalismo}\nArestas: {a_formalismo}")
+
     # g.adicionar_vertice(1)
     # g.adicionar_vertice(2)
     # g.adicionar_vertice(3)
