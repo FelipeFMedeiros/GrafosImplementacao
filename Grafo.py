@@ -156,6 +156,7 @@ class Grafo:
                     return True  # Se houver arestas múltiplas, retorna True
                 vizinhos_vistos.add(v2)
         return False  # Se não houver arestas múltiplas, retorna False
+    
     # Verifica se o grafo é conexo
     def eh_conexo(self):
         if not self.vertices:
@@ -247,6 +248,41 @@ class Grafo:
             return [v1, v2]
         else:
             return []  # A aresta não existe no grafo
+
+    # Converte uma matriz de adjacência para lista de adjacência
+    def g_mAdj_lAdj(self, matriz_adj):
+        """
+        Converte uma matriz de adjacência para lista de adjacência.
+        
+        :param matriz_adj: Matriz de adjacência (lista de listas)
+        :return: Um novo grafo com a representação em lista de adjacência
+        """
+        # Criar um novo grafo para armazenar a lista de adjacência
+        grafo = Grafo()
+        
+        # O tamanho da matriz é o número de vértices
+        n = len(matriz_adj)
+        
+        # Adicionar vértices
+        # A matriz pode começar com índice 0 ou 1, dependendo da convenção
+        # Verificamos se a primeira linha/coluna tem dados significativos
+        tem_indice_zero = any(matriz_adj[0]) if n > 0 else False
+        
+        # Adicionar vértices com base na matriz
+        inicio = 0 if tem_indice_zero else 1
+        for i in range(inicio, n):
+            grafo.adicionar_vertice(i)
+        
+        # Adicionar arestas com base na matriz
+        for i in range(inicio, n):
+            for j in range(inicio, n):
+                peso = matriz_adj[i][j]
+                if peso > 0:  # Se há uma aresta
+                    # Adicionar apenas uma vez, já que grafo é não direcionado
+                    if i < j:  # Evita adicionar a mesma aresta duas vezes
+                        grafo.adicionar_aresta(i, j, peso)
+        
+        return grafo
 
     # Função extra de visualização do grafo
     def visualizar(self, titulo="Visualização do Grafo"):
