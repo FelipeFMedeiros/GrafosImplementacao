@@ -29,6 +29,17 @@ class Grafo:
         for v in self.arestas:
             print(f"{v} -> {self.arestas[v]}")
 
+    #Recebendo formalismo
+    def g_form(self, vertices, arestas):
+        self.vertices = set(vertices)
+        self.arestas = {v: [] for v in vertices}  # iniciando a lista
+
+        for v1, v2, peso in arestas:
+            self.arestas[v1].append((v2, peso))
+            self.arestas[v2].append((v1, peso))
+
+        return imprimir()
+
     # Remover um vértice do grafo
     def remover_vertice(self, v):
         if v in self.vertices:
