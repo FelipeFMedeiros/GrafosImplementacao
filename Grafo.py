@@ -29,6 +29,17 @@ class Grafo:
         for v in self.arestas:
             print(f"{v} -> {self.arestas[v]}")
 
+    def g_form(self, vertices, arestas):
+        self.vertices = set(vertices)
+        self.arestas = {v: [] for v in vertices}  # iniciando a lista
+
+        for v1, v2, peso in arestas:
+            self.arestas[v1].append((v2, peso))
+            self.arestas[v2].append((v1, peso))
+
+        for v in self.arestas:
+            print(f"{v} -> {self.arestas[v]}")
+
     # Remover um vértice do grafo
     def remover_vertice(self, v):
         if v in self.vertices:
@@ -199,7 +210,7 @@ class Grafo:
         return True
 
     # Verifica se o grafo é bipartido
-    def eh_bipartido(self):
+    def eh_bipartido(self): # type: ignore
         """
         Verifica se o grafo é bipartido.
         Um grafo é bipartido se seus vértices podem ser divididos em dois grupos
@@ -293,7 +304,7 @@ class Grafo:
             return []  # A aresta não existe no grafo
 
     # Converte uma matriz de adjacência para lista de adjacência
-    def g_mAdj_lAdj(self, matriz_adj):
+    def g_mAdj_lAdj(self, matriz_adj): # type: ignore
         """
         Converte uma matriz de adjacência para lista de adjacência.
 
@@ -328,7 +339,7 @@ class Grafo:
         return grafo
 
     # Converte uma matriz de adjacência para matriz de incidência
-    def g_mAdj_mInc(self, matriz_adj):
+    def g_mAdj_mInc(self, matriz_adj): # type: ignore
         """
         Converte uma matriz de adjacência para uma matriz de incidência.
 
@@ -724,6 +735,9 @@ if __name__ == "__main__":
     print("Lista de adjacência:")
     g.g_form_lAdj(vertices, arestas)
 
+    print("É bipartido?", g.eh_bipartido())
+
     print("Grafo básico:")
     g.imprimir()
     g.visualizar("Exemplo básico").show()
+    g.form(vertices, arestas)
