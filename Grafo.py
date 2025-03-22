@@ -58,7 +58,7 @@ class Grafo:
     def g_form_mAdj(self):
         """Converte o grafo para uma matriz de adjacência"""
         n = len(self.vertices)
-        mAdj = [[0] * (n + 1) for _ in range(n + 1)]  # Matriz de (n+1)x(n+1) para índices 1 a n vértices
+        mAdj = [[0] * (n+1) for _ in range(n+1)]  # Matriz de (n+1)x(n+1) para índices 1 a n vértices
 
         for v in self.arestas:
             for u, w in self.arestas[v]:
