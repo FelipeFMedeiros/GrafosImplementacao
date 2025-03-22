@@ -38,7 +38,7 @@ class Grafo:
             self.arestas[v1].append((v2, peso))
             self.arestas[v2].append((v1, peso))
 
-        return imprimir()
+        return self.imprimir()
 
     # Remover um vértice do grafo
     def remover_vertice(self, v):
@@ -180,14 +180,15 @@ class Grafo:
         v_inicial = next(iter(self.vertices))
         visitados = set()
 
-    def busca(v):
+    def busca(self, v, visitados):
         if v in visitados:
             return
+
         visitados.add(v)
         for vizinho, peso in self.arestas.get(v, []):  # Desempacotar a tupla corretamente
-            busca(vizinho)
+            self.busca(vizinho)
 
-        busca(v_inicial)
+        self.busca(self.v_inicial)
 
         return len(visitados) == len(self.vertices)
 
