@@ -138,58 +138,14 @@ g.imprimir()
 #Removendo o vértice TES E ORI
 #g.remover_vertice(1003), g.remover_vertice(444)
 
+# Verificações de propriedades do grafo
+print("\nPropriedades do grafo:")
+print("O grafo é completo?", g.eh_completo())
+print("\nO grafo tem arestas múltiplas?", g.eh_multi())
+print("O grafo atual é bipartido?", g.eh_bipartido())
+print("O grafo agora é conexo?", g.eh_conexo())
+print("\nO grafo é regular?", g.eh_regular())
+
 #Visualizando o grafo
 g.visualizar()
 plt.show()
-#print("\nVerificando adjacência entre arestas:")
-#print("(1, 2) e (2, 3) são adjacentes?", g.a_eh_Adjacente((1, 2), (2, 3)))
-#print("(1, 2) e (5, 6) são adjacentes?", g.a_eh_Adjacente((1, 2), (5, 6)))
-
-#print("\nVerificando adjacência entre vértices:")
-#print("1 e 2 são adjacentes?", g.v_eh_adjacente(1, 2))
-#print("1 e 6 são adjacentes?", g.v_eh_adjacente(1, 6))
-
-#print("\nGraus dos vértices:")
-#for v in g.vertices:
-#    print(f"Grau do vértice {v}: {g.grau(v)}")
-
-#print("\nO grafo é regular?", g.eh_regular())
-
-#print("\nO grafo tem arestas múltiplas?", g.eh_multi())
-# Adicionar uma aresta múltipla e verificar novamente
-#print("\nAdicionando uma aresta múltipla entre os vértices 1 e 2...")
-#g.adicionar_aresta(vertices, arestas)  # Já existe uma aresta (1,2) com peso 5
-
-#print("O grafo agora tem arestas múltiplas?", g.eh_multi())
-
-# Testar se o grafo é conexo
-#print("\nVerificando se o grafo é conexo:")
-#print("O grafo atual é conexo?", g.eh_conexo())
-
-# Criar um grafo desconexo adicionando um vértice isolado
-#print("\nCriando um grafo desconexo adicionando um vértice isolado...")
-#g.adicionar_vertice(vertices)
-#print("O grafo agora é conexo?", g.eh_conexo())
-
-# Tornar o grafo conexo novamente
-#print("\nTornando o grafo conexo novamente...")
-#g.adicionar_aresta(vertices, arestas)
-#print("O grafo agora é conexo?", g.eh_conexo())
-
-# Testar se o grafo é completo
-#print("\nVerificando se o grafo é completo:")
-#print("O grafo atual é completo?", g.eh_completo())
-
-# Testar a função a_lInc
-#print("\nVértices incidentes à aresta (1, 2):", g.a_lInc((1, 2)))
-#print("Vértices incidentes à aresta (1, 3):", g.a_lInc((1, 3)))
-
-#print("\nLista de adjacência do vértice 1:", g.lista_adjacencia(1))
-
-# Testar se o grafo é bipartido
-#print("\nVerificando se o grafo é bipartido:")
-#print("O grafo atual é bipartido?", g.eh_bipartido())
-
-# Visualizar o grafo
-#plt = g.visualizar("Grafo com múltiplas arestas")
-#plt.show()
