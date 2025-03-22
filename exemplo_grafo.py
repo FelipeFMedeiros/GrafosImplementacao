@@ -141,10 +141,13 @@ g.imprimir()
 # Verificações de propriedades do grafo
 print("\nPropriedades do grafo:")
 print("O grafo é completo?", g.eh_completo())
-print("\nO grafo tem arestas múltiplas?", g.eh_multi())
+print("O grafo tem arestas múltiplas?", g.eh_multi())
 print("O grafo atual é bipartido?", g.eh_bipartido())
 print("O grafo agora é conexo?", g.eh_conexo())
-print("\nO grafo é regular?", g.eh_regular())
+print("O grafo é regular?", g.eh_regular())
+
+# Verificando o grau do vértice NAT (666)
+print(f"\nO grau do vértice NAT (666) é: {g.grau(666)}")
 
 #Visualizando o grafo
 g.visualizar()
