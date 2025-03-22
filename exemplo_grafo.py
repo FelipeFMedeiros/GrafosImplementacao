@@ -137,7 +137,7 @@ g.imprimir()
 #g.adicionar_vertice(1003)
 
 #Removendo o vértice TES E ORI
-g.remover_vertice(1003), g.remover_vertice(444)
+g.remover_vertice(1003), g.remover_vertice(444) # type: ignore
 
 print(f"Pela representação, verifique se SPO é adjacente a NAT:\n{g.v_eh_adjacente(1002, 666)}")
 #Imprima a lista de adjacência do vértice NAT
@@ -150,8 +150,8 @@ print(f'Trata-se de um grafo conexo?\n{g.eh_conexo()}')
 print(f'Trata-se de um grafo regular?\n{g.eh_regular()}')
 print(f'Informe o grau do vértice NAT:\n{g.grau(666)}')
 print(f'Informe a representação do grafo por Matriz de Adjacência:\n{g.g_form_mAdj()}')
-print(f'Informe a representação do grafo por Lista de Adjacência:\n{g.g_form_lAdj()}')
-print(f'Informe a representação do grafo por MAtriz de Incidência:\n{g.g_form_mInc()}')
+print(f'Informe a representação do grafo por Lista de Adjacência:\n{g.g_form_lAdj(vertices, arestas)}')
+print(f'Informe a representação do grafo por Matriz de Incidência:\n{g.g_form_mInc(vertices, arestas)}')
 
 
 # Verificações de propriedades do grafo

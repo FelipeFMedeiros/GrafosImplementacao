@@ -57,14 +57,22 @@ class Grafo:
     # Converte o grafo para uma matriz de adjacência
     def g_form_mAdj(self):
         """Converte o grafo para uma matriz de adjacência"""
-        n = len(self.vertices)
-        mAdj = [[0] * (n+1) for _ in range(n+1)]  # Matriz de (n+1)x(n+1) para índices 1 a n vértices
-
+        vertices_list = sorted(list(self.vertices))
+        n = len(vertices_list)
+        
+        # Criar mapeamento de vértice para índice
+        vertex_to_index = {v: i for i, v in enumerate(vertices_list)}
+        
+        # Criar matriz n x n preenchida com zeros
+        mAdj = [[0] * n for _ in range(n)]
+        
+        # Preencher a matriz com os pesos das arestas
         for v in self.arestas:
             for u, w in self.arestas[v]:
-                mAdj[v][u] = w
-                mAdj[u][v] = w  # Grafo não direcionado
-
+                i = vertex_to_index[v]
+                j = vertex_to_index[u]
+                mAdj[i][j] = w
+        
         return mAdj
 
     # Converte o formalismo em lista de adjacência
@@ -80,7 +88,9 @@ class Grafo:
         for v1, v2, peso in arestas:
             self.arestas[v1].append((v2, peso))
             self.arestas[v2].append((v1, peso))
-            print('Converão concluída')
+        
+        print('\nConversão para lista de adjacência concluída\n')
+        return self.arestas
 
     # Converte o formalismo em matriz de incidência
     def g_form_mInc(self, vertices, arestas):
@@ -186,9 +196,9 @@ class Grafo:
 
         visitados.add(v)
         for vizinho, peso in self.arestas.get(v, []):  # Desempacotar a tupla corretamente
-            self.busca(vizinho)
+            self.busca(vizinho)  # type: ignore
 
-        self.busca(self.v_inicial)
+        self.busca(self.v_inicial) # type: ignore
 
         return len(visitados) == len(self.vertices)
 
@@ -404,11 +414,12 @@ class Grafo:
         return vertices, arestas
 
     # Converte uma matriz de incidência para lista de adjacência
-    def g_mInc_mAdj(self, matriz_inc=None):
+    def g_mInc_mAdj(self, matriz_inc=None, pesos=None):
         """
         Converte uma matriz de incidência para uma matriz de adjacência.
 
         :param matriz_inc: Matriz de incidência (se None, usa self.matriz_incidencia)
+        :param pesos: Lista opcional de pesos das arestas (mesmo comprimento que o número de colunas em matriz_inc)
         :return: A matriz de adjacência resultante
         """
         # Usar a matriz armazenada se não fornecida
@@ -435,8 +446,10 @@ class Grafo:
             # Se encontrarmos exatamente 2 vértices, adicionar à matriz de adjacência
             if len(vertices_incidentes) == 2:
                 v1, v2 = vertices_incidentes
-                matriz_adj[v1][v2] = 1
-                matriz_adj[v2][v1] = 1  # Grafo não direcionado
+                # Usar o peso fornecido ou valor padrão 1
+                peso = pesos[j] if pesos and j < len(pesos) else 1
+                matriz_adj[v1][v2] = peso
+                matriz_adj[v2][v1] = peso  # Grafo não direcionado
 
         return matriz_adj
 
@@ -622,6 +635,13 @@ if __name__ == "__main__":
 
     print("Lista de adjacência:")
     g.g_form_lAdj(vertices, arestas)
+
+    # Verificações
+    g.eh_completo()
+    g.eh_regular()
+    g.eh_multi()
+    g.eh_conexo()
+    g.eh_bipartido()
 
     print("Grafo básico:")
     g.imprimir()
